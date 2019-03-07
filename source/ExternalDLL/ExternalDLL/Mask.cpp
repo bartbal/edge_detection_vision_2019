@@ -1,0 +1,112 @@
+#include "Mask.h"
+
+
+
+Mask::Mask(std::vector<std::vector<int>> mask, int devider) :
+	m_mask(mask),
+	m_devider(devider)
+{}
+
+
+
+Mask::~Mask()
+{
+}
+
+/// \brief   
+/// Get the height of the mask
+/// \details
+/// Returns the height of the mask
+int Mask::getHeight() {
+	return m_mask.size();
+}
+
+/// \brief   
+/// Get the with of the mask
+/// \details
+/// Returns the with of the mask
+int Mask::getWith() {
+	if (getHeight() != 0) {
+		return m_mask[0].size();
+	}
+	return 0;
+}
+
+/// \brief   
+/// Get the intesnity of a pixel
+/// \details
+/// This function returns the intensity of a pixel, 
+/// if the given coordinat is not on the images it returns NULL
+Intensity Mask::getPixel(const IntensityImage &originalImage, int x, int y) {
+	if(
+		x < 0 
+		|| 
+		y < 0
+		||
+		x > originalImage.getWidth()
+		||
+		y > originalImage.getHeight()
+	) {
+		return NULL;
+	}
+
+	return originalImage.getPixel(x, y);
+}
+
+int Mask::getSum() {
+	int sum = 0;
+	for (int i = 0; i < getHeight(); i++) {//for mask y
+		for (int j = 0; j < getWith(); j++) {//for mask x
+			sum += m_mask[j][i];
+		}
+	}
+	return sum;
+}
+
+/// \brief   
+/// Apply mask on a pixel
+/// \details
+/// This function calculates the intensity of a given pixel with the mask
+Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y) {
+	int start_y = y - ((getHeight() - 1) / 2);
+	int start_x = x - ((getWith() - 1) / 2);
+	int sum = getSum();
+	Intensity pixel = 0;
+
+	for (int i = 0; i < getHeight(); i++) {//for mask y
+		for (int j = 0; j < getWith(); j++) {//for mask x
+			Intensity temp = getPixel(originalImage, start_x + j, start_y + i);
+			if (temp == NULL) {
+				continue;
+			}
+			if (m_devider != 0) {
+				pixel += (temp*m_mask[j][i])/ m_devider;
+			} else if (sum <= 1) {
+				pixel += temp * m_mask[j][i];
+			}
+			else {
+				pixel += (temp*m_mask[j][i]) / sum;
+			}
+			//sum += m_mask[j][i];
+		}
+	}
+	//if (m_devider != 0) {
+	//	return pixel / m_devider;
+	//}
+	//if (sum <= 1) {
+	//	return pixel;
+	//}
+	return pixel;
+}
+
+/// \brief   
+/// Apply the mask to a new image
+/// \details
+/// This function gets the mask from the originalImage and saves it in the newImage
+void Mask::apply(const IntensityImage &originalImage, IntensityImage &newImage) {
+	for (int i = 0; i < originalImage.getHeight(); i++) {
+		for (int j = 0; j < originalImage.getWidth(); j++) {
+			newImage.setPixel(j, i, maskPixel(originalImage, j, i));
+		}
+	}
+}
