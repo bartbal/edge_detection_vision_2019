@@ -25,7 +25,7 @@ int Mask::getHeight() {
 /// Get the with of the mask
 /// \details
 /// Returns the with of the mask
-int Mask::getWith() {
+int Mask::getWidth() {
 	if (getHeight() != 0) {
 		return m_mask[0].size();
 	}
@@ -53,10 +53,14 @@ Intensity Mask::getPixel(const IntensityImage &originalImage, int x, int y) {
 	return originalImage.getPixel(x, y);
 }
 
+/// \brief   
+/// Get the sum of the mask
+/// \details
+/// Calculate the sum of the mask
 int Mask::getSum() {
 	int sum = 0;
 	for (int i = 0; i < getHeight(); i++) {//for mask y
-		for (int j = 0; j < getWith(); j++) {//for mask x
+		for (int j = 0; j < getWidth(); j++) {//for mask x
 			sum += m_mask[j][i];
 		}
 	}
@@ -69,12 +73,12 @@ int Mask::getSum() {
 /// This function calculates the intensity of a given pixel with the mask
 Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y) {
 	int start_y = y - ((getHeight() - 1) / 2);
-	int start_x = x - ((getWith() - 1) / 2);
+	int start_x = x - ((getWidth() - 1) / 2);
 	int sum = getSum();
-	Intensity pixel = 0;
+	int pixel = 0;
 
 	for (int i = 0; i < getHeight(); i++) {//for mask y
-		for (int j = 0; j < getWith(); j++) {//for mask x
+		for (int j = 0; j < getWidth(); j++) {//for mask x
 			Intensity temp = getPixel(originalImage, start_x + j, start_y + i);
 			if (temp == NULL) {
 				continue;
@@ -87,15 +91,8 @@ Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y) {
 			else {
 				pixel += (temp*m_mask[j][i]) / sum;
 			}
-			//sum += m_mask[j][i];
 		}
 	}
-	//if (m_devider != 0) {
-	//	return pixel / m_devider;
-	//}
-	//if (sum <= 1) {
-	//	return pixel;
-	//}
 	return pixel;
 }
 

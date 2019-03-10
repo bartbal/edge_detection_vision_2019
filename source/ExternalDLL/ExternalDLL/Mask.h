@@ -19,7 +19,7 @@ public:
 
 	int getHeight();
 
-	int getWith();
+	int getWidth();
 
 	int Mask::getSum();
 }; 
