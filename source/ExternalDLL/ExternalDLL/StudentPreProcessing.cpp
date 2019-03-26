@@ -3,7 +3,7 @@
 #include "ImageIO.h"
 #include "IntensityImagePrivate.h"
 #include "IntensityImage.h"
-
+#include "gaussian.hpp"
 #include "imageFactory.h"
 #include "Mask.h"
 
@@ -19,15 +19,17 @@ IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &imag
 
 IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &image) const {
 	ImageIO::isInDebugMode = true;
-	Mask guisianFilter({ {2,4,5, 4, 2},{4, 9,12, 9, 4},{5, 12, 15, 12, 5}, {4, 9, 12, 9, 4}, {2, 4, 5, 4, 2} });
-	//Mask guisianFilter({ {0,0,0},{0,1,0},{0,0,0} });
-	//Mask guisianFilter({ {1,2,1},{2,4,2},{1,2,1} }, 16);
+	GaussianFilter filter(1.5, 7);
+	//Mask gaussianFilter(filter.getGaussianFilter(30));
+	Mask gaussianFilter({ {2,4,5, 4, 2},{4, 9,12, 9, 4},{5, 12, 15, 12, 5}, {4, 9, 12, 9, 4}, {2, 4, 5, 4, 2} });
+	//Mask gaussianFilter({ {0,0,0},{0,1,0},{0,0,0} });
+	//Mask gaussianFilter({ {1,2,1},{2,4,2},{1,2,1} }, 16);
 	//Mask edgeDetection({ {0,1,0},{1,-4,1},{0,1,0} }, 9);
 	Mask edgeDetection({ {0,0,0,1,1,1,0,0,0},{0,0,0,1,1,1,0,0,0} ,{0,0,0,1,1,1,0,0,0} ,{1,1,1,-4,-4,-4,1,1,1},{1,1,1,-4,-4,-4,1,1,1},{1,1,1,-4,-4,-4,1,1,1},{0,0,0,1,1,1,0,0,0},{0,0,0,1,1,1,0,0,0},{0,0,0,1,1,1,0,0,0} }, 9);
 	
 	IntensityImage *newImage = ImageFactory::newIntensityImage(image.getWidth(), image.getHeight());
 	IntensityImage *newImage2 = ImageFactory::newIntensityImage(image.getWidth(), image.getHeight());
-	guisianFilter.apply(image, *newImage);
+	gaussianFilter.apply(image, *newImage);
 	edgeDetection.apply(*newImage, *newImage2);
 	//ImageIO::showImage(*newImage);
 	//ImageIO::showImage(*newImage2);
@@ -37,14 +39,8 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
 	IntensityImage *newImage = ImageFactory::newIntensityImage(image.getWidth(), image.getHeight());
-	float t = 210;
-	//int pixelCount = image.getHeight() * image.getWidth();
-	//for (int i = 0; i < image.getHeight(); i++) {//for mask y
-	//	for (int j = 0; j < image.getWidth(); j++) {//for mask x
-	//		avarage += image.getPixel(j, i);
-	//	}
-	//}
-	Intensity black = 225;
+	float t = 100;
+	Intensity black = 255;
 	Intensity white = 0;
 	for (int i = 0; i < image.getHeight(); i++) {//for mask y
 		for (int j = 0; j < image.getWidth(); j++) {//for mask x

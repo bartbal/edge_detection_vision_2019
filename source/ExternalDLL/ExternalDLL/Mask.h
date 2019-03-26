@@ -11,9 +11,9 @@ public:
 	Mask(std::vector<std::vector<int>> mask, int devider = 0);
 	~Mask();
 
-	Intensity getPixel(const IntensityImage &originalImage, int x, int y);
+	Intensity getPixel(const IntensityImage &originalImage, int x, int y, int orgHeight, int orgWidth);
 
-	Intensity maskPixel(const IntensityImage &originalImage, int x, int y);
+	Intensity maskPixel(const IntensityImage &originalImage, int x, int y, int orgHeight, int orgWidth);
 
 	void apply(const IntensityImage &originalImage, IntensityImage &newImage);
 

@@ -37,15 +37,15 @@ int Mask::getWidth() {
 /// \details
 /// This function returns the intensity of a pixel, 
 /// if the given coordinat is not on the images it returns NULL
-Intensity Mask::getPixel(const IntensityImage &originalImage, int x, int y) {
+Intensity Mask::getPixel(const IntensityImage &originalImage, int x, int y, int orgHeight, int orgWidth) {
 	if(
 		x < 0 
 		|| 
 		y < 0
 		||
-		x > originalImage.getWidth()
+		x > orgWidth
 		||
-		y > originalImage.getHeight()
+		y > orgHeight
 	) {
 		return NULL;
 	}
@@ -71,29 +71,32 @@ int Mask::getSum() {
 /// Apply mask on a pixel
 /// \details
 /// This function calculates the intensity of a given pixel with the mask
-Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y) {
+Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y, int orgHeight, int orgWidth) {
 	int start_y = y - ((getHeight() - 1) / 2);
 	int start_x = x - ((getWidth() - 1) / 2);
 	int sum = getSum();
-	int pixel = 0;
+	int newPixel = 0;
 
 	for (int i = 0; i < getHeight(); i++) {//for mask y
 		for (int j = 0; j < getWidth(); j++) {//for mask x
-			Intensity temp = getPixel(originalImage, start_x + j, start_y + i);
-			if (temp == NULL) {
+			Intensity orgPxl = getPixel(originalImage, start_x + j, start_y + i, orgHeight, orgWidth);
+			if (orgPxl == NULL) {
 				continue;
 			}
 			if (m_devider != 0) {
-				pixel += (temp*m_mask[j][i])/ m_devider;
+				newPixel += (orgPxl*m_mask[j][i])/ m_devider;
+				//if (newPixel < 0) {
+				//	newPixel *= -1;
+				//}
 			} else if (sum <= 1) {
-				pixel += temp * m_mask[j][i];
+				newPixel += orgPxl * m_mask[j][i];
 			}
 			else {
-				pixel += (temp*m_mask[j][i]) / sum;
+				newPixel += (orgPxl*m_mask[j][i]) / sum;
 			}
 		}
 	}
-	return pixel;
+	return newPixel;
 }
 
 /// \brief   
@@ -101,9 +104,11 @@ Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y) {
 /// \details
 /// This function gets the mask from the originalImage and saves it in the newImage
 void Mask::apply(const IntensityImage &originalImage, IntensityImage &newImage) {
-	for (int i = 0; i < originalImage.getHeight(); i++) {
-		for (int j = 0; j < originalImage.getWidth(); j++) {
-			newImage.setPixel(j, i, maskPixel(originalImage, j, i));
+	int orgHeight = originalImage.getHeight();
+	int orgWidth = originalImage.getWidth();
+	for (int i = 0; i < orgHeight; i++) {
+		for (int j = 0; j < orgWidth; j++) {
+			newImage.setPixel(j, i, maskPixel(originalImage, j, i, orgHeight, orgWidth));
 		}
 	}
 }
