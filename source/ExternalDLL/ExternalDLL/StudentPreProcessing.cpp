@@ -19,9 +19,9 @@ IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &imag
 
 IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &image) const {
 	ImageIO::isInDebugMode = true;
-	GaussianFilter filter(1.5, 7);
-	//Mask gaussianFilter(filter.getGaussianFilter(30));
-	Mask gaussianFilter({ {2,4,5, 4, 2},{4, 9,12, 9, 4},{5, 12, 15, 12, 5}, {4, 9, 12, 9, 4}, {2, 4, 5, 4, 2} });
+	GaussianFilter filter(1.5, 9);
+	Mask gaussianFilter(filter.getGaussianFilter(20));
+	//Mask gaussianFilter({ {2,4,5, 4, 2},{4, 9,12, 9, 4},{5, 12, 15, 12, 5}, {4, 9, 12, 9, 4}, {2, 4, 5, 4, 2} });
 	//Mask gaussianFilter({ {0,0,0},{0,1,0},{0,0,0} });
 	//Mask gaussianFilter({ {1,2,1},{2,4,2},{1,2,1} }, 16);
 	//Mask edgeDetection({ {0,1,0},{1,-4,1},{0,1,0} }, 9);
@@ -39,7 +39,7 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
 	IntensityImage *newImage = ImageFactory::newIntensityImage(image.getWidth(), image.getHeight());
-	float t = 100;
+	float t = 90;
 	Intensity black = 255;
 	Intensity white = 0;
 	for (int i = 0; i < image.getHeight(); i++) {//for mask y
