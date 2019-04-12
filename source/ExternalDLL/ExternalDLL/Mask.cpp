@@ -94,6 +94,12 @@ Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y, int
 			else {
 				newPixel += (orgPxl*m_mask[j][i]) / sum;
 			}
+			if (newPixel > 255) {
+				newPixel = 255;
+			}
+			else if (newPixel < 0) {
+				newPixel = 0;
+			}
 		}
 	}
 	return newPixel;
