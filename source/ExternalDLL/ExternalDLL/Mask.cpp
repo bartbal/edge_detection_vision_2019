@@ -85,14 +85,14 @@ Intensity Mask::maskPixel(const IntensityImage &originalImage, int x, int y, int
 			}
 			if (m_devider != 0) {
 				newPixel += (orgPxl*m_mask[j][i])/ m_devider;
-				//if (newPixel < 0) {
-				//	newPixel *= -1;
-				//}
 			} else if (sum <= 1) {
 				newPixel += orgPxl * m_mask[j][i];
 			}
 			else {
 				newPixel += (orgPxl*m_mask[j][i]) / sum;
+			}
+			if (newPixel > 255) {
+				newPixel = 255;
 			}
 		}
 	}
